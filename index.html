@@ -50,9 +50,9 @@
                         <table class="table d-none text-white" id="resultContainer">
                             <thead>
                                 <tr>
+                                    <th>Date</th>
                                     <th id="resultFname"></th>
                                     <th id="resultMname"></th>
-                                    <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody id="resultTablebody"></tbody>
@@ -221,7 +221,7 @@
             // Create a title element to display the event title
             var titleEl = document.createElement('div');
             titleEl.innerText = info.event.title;
-
+            calculatePercentages();
             return { domNodes: [containerEl] };
         },
         select: function(info) {
@@ -302,7 +302,11 @@
 
     // Calculate overall durations
     const totalTimeslotDuration = Object.values(motherDurations).reduce((sum, value) => sum + value, 0) + Object.values(fatherDurations).reduce((sum, value) => sum + value, 0);
-    
+
+    // Calculate overall percentages
+    const totalMotherPercentage = (Object.values(motherDurations).reduce((sum, value) => sum + (value / totalTimeslotDuration), 0) * 100) || 0;
+    const totalFatherPercentage = (Object.values(fatherDurations).reduce((sum, value) => sum + (value / totalTimeslotDuration), 0) * 100) || 0;
+
     // Build array with date and percentages
     var datePercentageArray = [];
     for (var dayKey in motherDurations) {
@@ -375,18 +379,34 @@
         const row = $('<tr>');
 
         const td1 = $('<td>');
-        td1.text(data.fatherPercentage + '%');
+        td1.text(data.date);
 
         const td2 = $('<td>');
-        td2.text(data.motherPercentage + '%');
+        td2.text(data.fatherPercentage + '%');
 
         const td3 = $('<td>');
-        td3.text(data.date);
+        td3.text(data.motherPercentage + '%');
 
         row.append(td1, td2, td3);
 
         tableBody.append(row);
     }
+    // Let's add the totals row
+    const row = $('<tr id="lastRow">');
+
+    const td1 = $('<td>');
+    td1.html('<strong>Total</strong>');
+
+    const td2 = $('<td>');
+    td2.html('<strong>' + Math.round(totalFatherPercentage) + '%</strong>');
+
+    const td3 = $('<td>');
+    td3.html('<strong>' + Math.round(totalMotherPercentage) + '%</strong>');
+
+    row.append(td1, td2, td3);
+
+    tableBody.append(row);
+
 }
 
 
