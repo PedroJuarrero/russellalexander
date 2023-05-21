@@ -275,31 +275,30 @@
         }
     });
 
-function calculatePercentages() {
+    function calculatePercentages() {
     let motherDurations = {};
     let fatherDurations = {};
 
-    var events = ec.getEvents();
+    var events = ec.getEvents();console.log(events);
     for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var eventStart = moment(event.start);
-        var eventEnd = moment(event.end);
-
+        var eventEnd = moment(event.end); // Include the end day in the duration calculation
+        var eventDuration = eventEnd.diff(eventStart, 'minutes');
         var currDay = moment(eventStart); // Start with the event start day
 
         while (currDay.isSameOrBefore(eventEnd, 'day')) {
             var dayKey = currDay.format('YYYY-MM-DD');
-
             if (event.extendedProps.type == 'm') {
                 if (!motherDurations[dayKey]) {
                     motherDurations[dayKey] = 0;
                 }
-                motherDurations[dayKey] += 1; // Increment the duration by 1 day
+                motherDurations[dayKey] += eventDuration; // Increment the duration by 1 day
             } else {
                 if (!fatherDurations[dayKey]) {
                     fatherDurations[dayKey] = 0;
                 }
-                fatherDurations[dayKey] += 1; // Increment the duration by 1 day
+                fatherDurations[dayKey] += eventDuration; // Increment the duration by 1 day
             }
 
             currDay.add(1, 'day'); // Move to the next day
@@ -307,31 +306,39 @@ function calculatePercentages() {
     }
 
     // Calculate overall durations
-    const totalTimeslotDuration =
-        Object.values(motherDurations).reduce((sum, value) => sum + value, 0) +
-        Object.values(fatherDurations).reduce((sum, value) => sum + value, 0);
-
+    const totalTimeslotDuration = Object.values(motherDurations).reduce((sum, value) => sum + value, 0) + Object.values(fatherDurations).reduce((sum, value) => sum + value, 0);
+    
     // Build array with date and percentages
     var datePercentageArray = [];
     for (var dayKey in motherDurations) {
         if (motherDurations.hasOwnProperty(dayKey)) {
             var motherDuration = motherDurations[dayKey];
             var fatherDuration = fatherDurations[dayKey] || 0;
-            var totalDuration = motherDuration + fatherDuration;
 
-            if (totalDuration === 0) {
-                // Skip if there is no total duration
-                continue;
+            if (motherDuration === fatherDuration) {
+                // Both parents spent the same amount of time, set percentages to 50% each
+                datePercentageArray.push({
+                    date: dayKey,
+                    motherPercentage: 50,
+                    fatherPercentage: 50,
+                });
+            } else {
+                var totalDuration = motherDuration + fatherDuration;
+
+                if (totalDuration === 0) {
+                    // Skip if there is no total duration
+                    continue;
+                }
+
+                var motherPercentage = (motherDuration / totalDuration) * 100;
+                var fatherPercentage = (fatherDuration / totalDuration) * 100;
+
+                datePercentageArray.push({
+                    date: dayKey,
+                    motherPercentage: Math.round(motherPercentage),
+                    fatherPercentage: Math.round(fatherPercentage),
+                });
             }
-
-            var motherPercentage = (motherDuration / totalDuration) * 100;
-            var fatherPercentage = (fatherDuration / totalDuration) * 100;
-
-            datePercentageArray.push({
-                date: dayKey,
-                motherPercentage: Math.round(motherPercentage),
-                fatherPercentage: Math.round(fatherPercentage),
-            });
         }
     }
 
@@ -395,6 +402,11 @@ function calculatePercentages() {
         tableBody.append(row);
     }
 }
+
+
+
+
+
 
 
   
