@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Event Calendar</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="stylesheet" href="assets/css/global.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@1.1.1/event-calendar.min.css">
+	<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+
+<div class="d-flex" id="wrapper">
+            <!-- Sidebar-->
+            <div class="border-end" id="sidebar-wrapper">
+                <div class="sidebar-heading border-bottom bg-light">
+                    <a class="navbar-brand navbar-logo" href="index.html">
+                        <img src="assets/img/logo.png" alt="" />
+                    </a>
+                </div>
+                <div class="list-group list-group-flush">
+                    <!-- <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">CourtneyD</a> -->
+                    
+                    <div class="list-group-item list-group-item-action list-group-item-light p-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="parent1Input" placeholder="Parent 1" value="Father">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" id="r1" type="radio" name="parent" value="f" checked>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item list-group-item-action list-group-item-light p-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="parent2Input" placeholder="Parent 2" value="Mother">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="parent" value="m">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item p-3">
+                        <div class="input-group">
+                            <button class="btn btn-success mx-auto" onclick="calculateTime()">Calculate</button>
+                        </div>
+                    </div>
+                    <div class="list-group-item list-group-item-action list-group-item-light p-3 d-none text-white" id="resultContainer">
+                        <div class="row">
+                            <div class="col-6"><span id="resultFname"></span>: <span id="resultFPercentage"></span>%</div>
+                            <div class="col-6"><span id="resultMname"></span>: <span id="resultMPercentage"></span>%</div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <!-- Page content wrapper-->
+            <div id="page-content-wrapper">
+                <!-- Page content-->
+                <div class="row">
+				    <div id="ec" class="col"></div>
+				</div>
+            </div>
+        </div>
+
+        <!-- Bootstrap Modal -->
+        <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Set Time</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                    <label for="startTime">Start Time</label>
+                    <input type="time" class="form-control" id="startTime">
+                    </div>
+                    <div class="form-group">
+                    <label for="endTime">End Time</label>
+                    <input type="time" class="form-control" id="endTime">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveTime">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="assets/js/moment.js" ></script>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js'></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@1.1.1/event-calendar.min.js"></script>
+<!-- Core theme JS-->
+<script src="assets/js/scripts.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('.input-group').click(function(e) {
+            let radio = $(this).find('input[type=radio]');
+            radio.prop('checked', true);
+        });
+
+        var buttonPressedCount = 0;
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Shift') {
+                buttonPressedCount++;
+                if (buttonPressedCount === 2) {
+                    const selectedRadio     = document.querySelector('input[name="parent"]:checked');
+                    selectedRadio.checked   = false;
+                    if (selectedRadio.value === 'f') {
+                        $('#parent2Input').siblings('.input-group-text').find('input').prop('checked', true);
+                    } else if (selectedRadio.value === 'm') {
+                        $('#parent1Input').siblings('.input-group-text').find('input').prop('checked', true);
+                    }
+                    buttonPressedCount = 0; // Reset the count
+                }
+            } else {
+                buttonPressedCount = 0; // Reset the count if any other key is pressed
+            }
+        });
+    });
+
+    let ec = new EventCalendar(document.getElementById('ec'), {
+        view: 'dayGridMonth',
+        height: '800px',
+        headerToolbar: {
+            start: 'prev,next today',
+            center: 'title',
+            end: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        // scrollTime: '09:00:00',
+        events: [], // no events by default
+        eventResizeStop: (e) => {
+            console.log('Resizing stopped: ',e);
+        },
+        views: {
+            timeGridWeek: {pointer: true}
+        },
+        
+        eventClick: function(info) {
+            // Open the modal when an event is clicked
+            $('#eventModal').modal('show');
+
+            // Set the initial values of the start and end time fields
+            var startTimeField = document.getElementById('startTime');
+            var endTimeField = document.getElementById('endTime');
+            startTimeField.value = moment(info.event.start).format('HH:mm');
+            endTimeField.value = moment(info.event.end).format('HH:mm');
+
+            // Save the updated time values when the "Save" button is clicked
+            document.getElementById('saveTime').addEventListener('click', function() {
+                var newStartTime = startTimeField.value;
+                var newEndTime = endTimeField.value;
+
+                // Update the event start and end times
+                var newStartTime = moment(info.event.start).set({ hour: newStartTime.split(':')[0], minute: newStartTime.split(':')[1] });
+                var newEndTime = moment(info.event.end).set({ hour: newEndTime.split(':')[0], minute: newEndTime.split(':')[1] });
+
+                // Update the event start and end times
+                info.event.start = newStartTime.toDate();
+                info.event.end = newEndTime.toDate();
+
+                // Update the event title with the updated time
+                // Update the event title with the updated time
+                // info.event.title = moment(info.event.start).format('HH:mm') + ' - ' + moment(info.event.end).format('HH:mm');
+
+
+                // Close the modal
+                $('#eventModal').modal('hide');
+                console.log(info.event);
+                ec.updateEvent(info.event);
+
+            });
+        },
+        editable: true,
+        eventDrop: function(info) {
+        // Event dropped onto a new date
+            var event = info.event;
+            console.log('Event dropped:', event);
+            // Handle event creation or updates here
+        },
+        dayMaxEvents: true,
+        nowIndicator: false,
+        eventTimeFormat: {
+            hour: 'numeric',
+            minute: '2-digit',
+            meridiem: 'short'
+        },
+        selectable: true,
+        eventContent: function(info) {
+            // Create a new element to display the start and end time
+            var timeEl = document.createElement('div');
+            timeEl.classList.add('event-time');
+            timeEl.innerHTML = moment(info.event.start).format('HH:mm') + ' - ' + moment(info.event.end).format('HH:mm');
+
+            // Create a container element to hold the time and event title
+            var containerEl = document.createElement('div');
+            // Create a delete text element
+            var trashIcon = document.createElement('img');
+            trashIcon.className = 'trash-icon';
+            trashIcon.src = 'assets/img/trash-icon.png';
+            trashIcon.alt = 'Delete';
+            trashIcon.setAttribute('title', 'Delete');
+
+            trashIcon.addEventListener('click', function (event) {
+                // Prevent the event from bubbling to the eventClick handler
+                event.stopPropagation();
+                const proceed = confirm('Are you sure you want to remove this entry?');
+                if (proceed && info.event.id) {
+                    ec.removeEventById(info.event.id);
+                }
+            });
+
+            timeEl.appendChild(trashIcon);
+            containerEl.appendChild(timeEl);
+            containerEl.appendChild(document.createTextNode(info.event.title));
+
+            // Create a title element to display the event title
+            var titleEl = document.createElement('div');
+            titleEl.innerText = info.event.title;
+
+            // Append the delete text and title elements to the container
+            // containerEl.appendChild(trashIcon);
+
+            return { domNodes: [containerEl] };
+        },
+        select: function(info) {
+            // Prompt the user for event details
+            const selectedRadio = document.querySelector('input[name="parent"]:checked');
+            
+            let title           = '';
+            let eventColor      = '#039be5';
+            if (selectedRadio && 'm' == selectedRadio.value) {
+                title         = document.querySelector('#parent2Input').value;
+                eventColor      = '#FE6B64';
+            } else {
+                title         = document.querySelector('#parent1Input').value;
+            }
+
+            let start           = info.start;
+            let end             = info.end;
+            if(ec.view.type == 'dayGridMonth') {
+                start           = moment(info.start).startOf('day').toDate();
+                end             = moment(info.end).endOf('day').toDate();
+            }
+
+            if (title) {
+                // Create a new event object
+                var event = {
+                    title: title,
+                    start: start,
+                    end: end,
+                    allDay: false,
+                    color: eventColor,
+                    backgroundColor: eventColor,
+                    extendedProps: { type: selectedRadio ? selectedRadio.value : '' },
+                    classNames: 'customized-event',
+                    description: 'test',
+                    startEditable: true,
+                    editable: true
+                };
+                // Add the event to the calendar
+                ec.addEvent(event);
+            }
+
+            ec.unselect();
+        }
+    });
+
+    function calculateTime() {
+        
+        let motherDurations  = 0;
+        let fatherDurations  = 0;
+
+        var events = ec.getEvents();
+        for (var i = 0; i < events.length; i++) {
+            var event = events[i];
+            var eventStart = moment(event.start);
+            var eventEnd = moment(event.end).add(1, 'minute');
+            var eventDuration = eventEnd.diff(eventStart, 'minutes');
+
+            if(event.extendedProps.type == 'm') {
+                motherDurations += eventDuration;
+            } else {
+                fatherDurations += eventDuration;
+            }
+            
+        }
+
+        const totalTimeslotDuration = motherDurations + fatherDurations;
+        var motherPercentage = (motherDurations / totalTimeslotDuration) * 100;
+        var fatherPercentage = (fatherDurations / totalTimeslotDuration) * 100;
+
+        // Display result section
+        $('#resultContainer').removeClass('d-none');
+
+        // Populate names in result section
+        $('#resultFname').text($('#parent1Input').val());
+        $('#resultMname').text($('#parent2Input').val());
+
+        // Populate percentages
+        $('#resultFPercentage').text(fatherPercentage ? Math.round(fatherPercentage) : 0);
+        $('#resultMPercentage').text(motherPercentage ? Math.round(motherPercentage) : 0);
+
+    }
+
+  
+ 
+
+</script>
+</body>
+</html>
