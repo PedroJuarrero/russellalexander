@@ -61,6 +61,11 @@ body {
 	background: url('../img/main-bg.jpg');
  }
 
+.navbar-logo img {
+	height: 7.5em;
+	margin-left: -0.2em;
+}
+
  /* responsiveness */
  @media (max-width: 768px) {
 	#wrapper {
@@ -80,10 +85,6 @@ body {
 @media (min-width: 769px) {
 	#wrapper {
 		 flex-direction: row;
-	}
-
-	.navbar-logo img {
-		height: 130px;
 	}
 
 	#sidebar-wrapper {
