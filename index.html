@@ -2,77 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>CourtneyD</title>
-
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="assets/css/global.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@1.1.1/event-calendar.min.css">
 	<link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
-<body>
-
 <div class="d-flex" id="wrapper">
             <!-- Sidebar-->
-            <div class="border-end" id="sidebar-wrapper">
-                <div class="sidebar-heading border-bottom bg-light">
-                    <a class="navbar-brand navbar-logo" href="index.html">
-                        <img src="assets/img/logo.png" alt="" />
-                    </a>
-                </div>
-                <div class="list-group list-group-flush">
-                    <!-- <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">CourtneyD</a> -->
-                    
-                    <div class="list-group-item list-group-item-action list-group-item-light p-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="parent1Input" placeholder="Parent 1" value="Father">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" id="r1" type="radio" name="parent" value="f" checked>
+            <div class="border-end-" id="sidebar-wrapper">
+                
+                    <div class="sidebar-heading border-bottom bg-light text-center">
+                        <a class="navbar-brand navbar-logo" href="index.html">
+                            <img src="assets/img/logo.png" alt="" />
+                        </a>
+                    </div>
+            
+                    <div id="sidebarCollapse">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item list-group-item-action list-group-item-light p-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="parent1Input" placeholder="Parent 1" value="Father">
+                                    <div class="input-group-text">
+                                        <input class="form-check-input mt-0" id="r1" type="radio" name="parent" value="f" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item list-group-item-action list-group-item-light p-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="parent2Input" placeholder="Parent 2" value="Mother">
+                                    <div class="input-group-text">
+                                        <input class="form-check-input mt-0" type="radio" name="parent" value="m">
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div class="list-group-item p-3">
+                                <div class="input-group">
+                                    <button class="btn btn-success mx-auto" onclick="calculateTime()">Calculate</button>
+                                </div>
+                            </div>
+            
+                            <div class="table-responsive">
+                                <table class="table d-none text-white" id="resultContainer">
+                                    <thead>
+                                        <tr>
+                                            <th id="resultFname"></th>
+                                            <th id="resultMname"></th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resultTablebody"></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="list-group-item list-group-item-action list-group-item-light p-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="parent2Input" placeholder="Parent 2" value="Mother">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" name="parent" value="m">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="list-group-item p-3">
-                        <div class="input-group">
-                            <button class="btn btn-success mx-auto" onclick="calculateTime()">Calculate</button>
-                        </div>
-                    </div>
-                    <div class="list-group-item list-group-item-action list-group-item-light p-3 d-none text-white" id="resultContainer">
-                        <div class="row">
-                            <div class="col-6"><span id="resultFname"></span>: <span id="resultFPercentage"></span>%</div>
-                            <div class="col-6"><span id="resultMname"></span>: <span id="resultMPercentage"></span>%</div>
-                        </div>
-                    </div>
-
-
                 </div>
-            </div>
             <!-- Page content wrapper-->
             <div id="page-content-wrapper">
                 <!-- Page content-->
                 <div class="row">
-				    <div id="ec" class="col"></div>
+                    <div class="col">
+                        <div id="ec"></div>
+                    </div>
 				</div>
             </div>
         </div>
 
         <!-- Bootstrap Modal -->
         <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="eventModalLabel">Set Time</h5>
@@ -104,8 +106,6 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js'></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@1.1.1/event-calendar.min.js"></script>
-<!-- Core theme JS-->
-<script src="assets/js/scripts.js"></script>
 
 <script type="text/javascript">
 
@@ -137,7 +137,7 @@
     });
 
     let ec = new EventCalendar(document.getElementById('ec'), {
-        view: 'dayGridMonth',
+        view: 'timeGridWeek',
         height: '800px',
         headerToolbar: {
             start: 'prev,next today',
@@ -189,12 +189,7 @@
             });
         },
         editable: true,
-        eventDrop: function(info) {
-        // Event dropped onto a new date
-            var event = info.event;
-            console.log('Event dropped:', event);
-            // Handle event creation or updates here
-        },
+        eventDrop: function(info) {},
         dayMaxEvents: true,
         nowIndicator: false,
         eventTimeFormat: {
@@ -234,9 +229,6 @@
             // Create a title element to display the event title
             var titleEl = document.createElement('div');
             titleEl.innerText = info.event.title;
-
-            // Append the delete text and title elements to the container
-            // containerEl.appendChild(trashIcon);
 
             return { domNodes: [containerEl] };
         },
@@ -285,8 +277,8 @@
 
     function calculateTime() {
         
-        let motherDurations  = 0;
-        let fatherDurations  = 0;
+        let motherDurations = {};
+        let fatherDurations = {};
 
         var events = ec.getEvents();
         for (var i = 0; i < events.length; i++) {
@@ -295,28 +287,108 @@
             var eventEnd = moment(event.end).add(1, 'minute');
             var eventDuration = eventEnd.diff(eventStart, 'minutes');
 
-            if(event.extendedProps.type == 'm') {
-                motherDurations += eventDuration;
+            var dayKey = eventStart.format('YYYY-MM-DD');
+
+            if (event.extendedProps.type == 'm') {
+                if (!motherDurations[dayKey]) {
+                    motherDurations[dayKey] = 0;
+                }
+                motherDurations[dayKey] += eventDuration;
             } else {
-                fatherDurations += eventDuration;
+                if (!fatherDurations[dayKey]) {
+                    fatherDurations[dayKey] = 0;
+                }
+                fatherDurations[dayKey] += eventDuration;
             }
-            
         }
 
+        // Calculate overall durations
         const totalTimeslotDuration = motherDurations + fatherDurations;
-        var motherPercentage = (motherDurations / totalTimeslotDuration) * 100;
-        var fatherPercentage = (fatherDurations / totalTimeslotDuration) * 100;
+
+        // Build array with date and percentages
+        var datePercentageArray = [];
+        for (var dayKey in motherDurations) {
+            if (motherDurations.hasOwnProperty(dayKey)) {
+                var motherDuration = motherDurations[dayKey];
+                var fatherDuration = fatherDurations[dayKey] ? fatherDurations[dayKey] : 0;
+                var totalDuration = motherDuration + fatherDuration;
+
+                if (totalDuration === 0) {
+                // Skip if there is no total duration
+                    continue;
+                }
+                
+                var motherPercentage = (motherDuration / totalDuration) * 100;
+                var fatherPercentage = (fatherDuration / totalDuration) * 100;
+
+                datePercentageArray.push({
+                    date: dayKey,
+                    motherPercentage: Math.round(motherPercentage),
+                    fatherPercentage: Math.round(fatherPercentage),
+                });
+            }
+        }
+
+        // Handle days with data only for one parent (father)
+        for (var dayKey in fatherDurations) {
+            if (fatherDurations.hasOwnProperty(dayKey) && !motherDurations[dayKey]) {
+                datePercentageArray.push({
+                    date: dayKey,
+                    motherPercentage: 0,
+                    fatherPercentage: 100,
+                });
+            }
+        }
+
+        // Sort the datePercentageArray based on the date
+        datePercentageArray.sort((a, b) => {
+            return moment(a.date).diff(moment(b.date));
+        });
+
+        // Format the dates using Moment.js
+        for (var i = 0; i < datePercentageArray.length; i++) {
+            var dateObj = datePercentageArray[i];
+            dateObj.date = moment(dateObj.date).format('MMMM DD, YYYY');
+        }
+
 
         // Display result section
         $('#resultContainer').removeClass('d-none');
 
-        // Populate names in result section
+        // // Populate names in result section
         $('#resultFname').text($('#parent1Input').val());
         $('#resultMname').text($('#parent2Input').val());
 
-        // Populate percentages
-        $('#resultFPercentage').text(fatherPercentage ? Math.round(fatherPercentage) : 0);
-        $('#resultMPercentage').text(motherPercentage ? Math.round(motherPercentage) : 0);
+        const tableBody     = $('#resultTablebody');
+
+        tableBody.empty();
+        if( !datePercentageArray.length ) {
+            const row           = $('<tr>');
+            const td            = $('<td>');
+            td.append($('<em>No data</em>')).attr('colspan', '3').addClass('text-center');
+
+            row.append(td)
+
+            tableBody.append(row);
+            return;
+        }
+
+        for(let data of datePercentageArray) {
+            const row           = $('<tr>');
+            
+            const td1           = $('<td>');
+            td1.text(data.fatherPercentage + '%');
+
+            const td2           = $('<td>');
+            td2.text(data.motherPercentage + '%');
+
+            const td3           = $('<td>');
+            td3.text(data.date);
+
+            row.append(td1, td2, td3)
+
+            tableBody.append(row);
+        }
 
     }
 
