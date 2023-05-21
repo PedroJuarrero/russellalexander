@@ -89,6 +89,7 @@ body {
 
 	#sidebar-wrapper {
 		 order: 0;
+		 min-height: 100vh;
 		 max-width: 24rem !important;
 	}
 
