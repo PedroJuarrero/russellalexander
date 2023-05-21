@@ -12,65 +12,65 @@
 </head>
 
 <div class="d-flex" id="wrapper">
-            <!-- Sidebar-->
-            <div class="border-end-" id="sidebar-wrapper">
-                
-                    <div class="sidebar-heading border-bottom bg-light text-center">
-                        <a class="navbar-brand navbar-logo" href="index.html">
-                            <img src="assets/img/logo.png" alt="" />
-                        </a>
-                    </div>
-            
-                    <div id="sidebarCollapse">
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item list-group-item-action list-group-item-light p-3">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="parent1Input" placeholder="Parent 1" value="Father">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" id="r1" type="radio" name="parent" value="f" checked>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="list-group-item list-group-item-action list-group-item-light p-3">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="parent2Input" placeholder="Parent 2" value="Mother">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="radio" name="parent" value="m">
-                                    </div>
-                                </div>
-                            </div>
-            
-                            <div class="list-group-item p-3">
-                                <div class="input-group">
-                                    <button class="btn btn-success mx-auto" onclick="calculateTime()">Calculate</button>
-                                </div>
-                            </div>
-            
-                            <div class="table-responsive">
-                                <table class="table d-none text-white" id="resultContainer">
-                                    <thead>
-                                        <tr>
-                                            <th id="resultFname"></th>
-                                            <th id="resultMname"></th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="resultTablebody"></tbody>
-                                </table>
+    <!-- Sidebar-->
+    <div class="border-end" id="sidebar-wrapper">
+        
+            <div class="sidebar-heading border-bottom bg-light text-center">
+                <a class="navbar-brand navbar-logo" href="index.html">
+                    <img src="assets/img/logo.png" alt="" />
+                </a>
+            </div>
+    
+            <div id="sidebarCollapse">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item list-group-item-action list-group-item-light p-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="parent1Input" placeholder="Parent 1" value="Father">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" id="r1" type="radio" name="parent" value="f" checked>
                             </div>
                         </div>
                     </div>
-                </div>
-            <!-- Page content wrapper-->
-            <div id="page-content-wrapper">
-                <!-- Page content-->
-                <div class="row">
-                    <div class="col">
-                        <div id="ec"></div>
+                    <div class="list-group-item list-group-item-action list-group-item-light p-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="parent2Input" placeholder="Parent 2" value="Mother">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="parent" value="m">
+                            </div>
+                        </div>
                     </div>
-				</div>
+    
+                    <div class="list-group-item p-3">
+                        <div class="input-group">
+                            <button class="btn btn-success mx-auto" onclick="calculatePercentages()">Calculate</button>
+                        </div>
+                    </div>
+    
+                    <div class="table-responsive">
+                        <table class="table d-none text-white" id="resultContainer">
+                            <thead>
+                                <tr>
+                                    <th id="resultFname"></th>
+                                    <th id="resultMname"></th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultTablebody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <!-- Page content-->
+        <div class="row">
+            <div class="col">
+                <div id="ec"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Bootstrap Modal -->
         <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
@@ -275,122 +275,127 @@
         }
     });
 
-    function calculateTime() {
-        
-        let motherDurations = {};
-        let fatherDurations = {};
+function calculatePercentages() {
+    let motherDurations = {};
+    let fatherDurations = {};
 
-        var events = ec.getEvents();
-        for (var i = 0; i < events.length; i++) {
-            var event = events[i];
-            var eventStart = moment(event.start);
-            var eventEnd = moment(event.end).add(1, 'minute');
-            var eventDuration = eventEnd.diff(eventStart, 'minutes');
+    var events = ec.getEvents();
+    for (var i = 0; i < events.length; i++) {
+        var event = events[i];
+        var eventStart = moment(event.start);
+        var eventEnd = moment(event.end);
 
-            var dayKey = eventStart.format('YYYY-MM-DD');
+        var currDay = moment(eventStart); // Start with the event start day
+
+        while (currDay.isSameOrBefore(eventEnd, 'day')) {
+            var dayKey = currDay.format('YYYY-MM-DD');
 
             if (event.extendedProps.type == 'm') {
                 if (!motherDurations[dayKey]) {
                     motherDurations[dayKey] = 0;
                 }
-                motherDurations[dayKey] += eventDuration;
+                motherDurations[dayKey] += 1; // Increment the duration by 1 day
             } else {
                 if (!fatherDurations[dayKey]) {
                     fatherDurations[dayKey] = 0;
                 }
-                fatherDurations[dayKey] += eventDuration;
+                fatherDurations[dayKey] += 1; // Increment the duration by 1 day
             }
+
+            currDay.add(1, 'day'); // Move to the next day
         }
-
-        // Calculate overall durations
-        const totalTimeslotDuration = motherDurations + fatherDurations;
-
-        // Build array with date and percentages
-        var datePercentageArray = [];
-        for (var dayKey in motherDurations) {
-            if (motherDurations.hasOwnProperty(dayKey)) {
-                var motherDuration = motherDurations[dayKey];
-                var fatherDuration = fatherDurations[dayKey] ? fatherDurations[dayKey] : 0;
-                var totalDuration = motherDuration + fatherDuration;
-
-                if (totalDuration === 0) {
-                // Skip if there is no total duration
-                    continue;
-                }
-                
-                var motherPercentage = (motherDuration / totalDuration) * 100;
-                var fatherPercentage = (fatherDuration / totalDuration) * 100;
-
-                datePercentageArray.push({
-                    date: dayKey,
-                    motherPercentage: Math.round(motherPercentage),
-                    fatherPercentage: Math.round(fatherPercentage),
-                });
-            }
-        }
-
-        // Handle days with data only for one parent (father)
-        for (var dayKey in fatherDurations) {
-            if (fatherDurations.hasOwnProperty(dayKey) && !motherDurations[dayKey]) {
-                datePercentageArray.push({
-                    date: dayKey,
-                    motherPercentage: 0,
-                    fatherPercentage: 100,
-                });
-            }
-        }
-
-        // Sort the datePercentageArray based on the date
-        datePercentageArray.sort((a, b) => {
-            return moment(a.date).diff(moment(b.date));
-        });
-
-        // Format the dates using Moment.js
-        for (var i = 0; i < datePercentageArray.length; i++) {
-            var dateObj = datePercentageArray[i];
-            dateObj.date = moment(dateObj.date).format('MMMM DD, YYYY');
-        }
-
-
-        // Display result section
-        $('#resultContainer').removeClass('d-none');
-
-        // // Populate names in result section
-        $('#resultFname').text($('#parent1Input').val());
-        $('#resultMname').text($('#parent2Input').val());
-
-        const tableBody     = $('#resultTablebody');
-
-        tableBody.empty();
-        if( !datePercentageArray.length ) {
-            const row           = $('<tr>');
-            const td            = $('<td>');
-            td.append($('<em>No data</em>')).attr('colspan', '3').addClass('text-center');
-
-            row.append(td)
-
-            tableBody.append(row);
-            return;
-        }
-
-        for(let data of datePercentageArray) {
-            const row           = $('<tr>');
-            
-            const td1           = $('<td>');
-            td1.text(data.fatherPercentage + '%');
-
-            const td2           = $('<td>');
-            td2.text(data.motherPercentage + '%');
-
-            const td3           = $('<td>');
-            td3.text(data.date);
-
-            row.append(td1, td2, td3)
-
-            tableBody.append(row);
-        }
-
     }
+
+    // Calculate overall durations
+    const totalTimeslotDuration =
+        Object.values(motherDurations).reduce((sum, value) => sum + value, 0) +
+        Object.values(fatherDurations).reduce((sum, value) => sum + value, 0);
+
+    // Build array with date and percentages
+    var datePercentageArray = [];
+    for (var dayKey in motherDurations) {
+        if (motherDurations.hasOwnProperty(dayKey)) {
+            var motherDuration = motherDurations[dayKey];
+            var fatherDuration = fatherDurations[dayKey] || 0;
+            var totalDuration = motherDuration + fatherDuration;
+
+            if (totalDuration === 0) {
+                // Skip if there is no total duration
+                continue;
+            }
+
+            var motherPercentage = (motherDuration / totalDuration) * 100;
+            var fatherPercentage = (fatherDuration / totalDuration) * 100;
+
+            datePercentageArray.push({
+                date: dayKey,
+                motherPercentage: Math.round(motherPercentage),
+                fatherPercentage: Math.round(fatherPercentage),
+            });
+        }
+    }
+
+    // Handle days with data only for one parent (father)
+    for (var dayKey in fatherDurations) {
+        if (fatherDurations.hasOwnProperty(dayKey) && !motherDurations[dayKey]) {
+            datePercentageArray.push({
+                date: dayKey,
+                motherPercentage: 0,
+                fatherPercentage: 100,
+            });
+        }
+    }
+
+    // Sort the datePercentageArray based on the date
+    datePercentageArray.sort((a, b) => {
+        return moment(a.date).diff(moment(b.date));
+    });
+
+    // Format the dates using Moment.js
+    for (var i = 0; i < datePercentageArray.length; i++) {
+        var dateObj = datePercentageArray[i];
+        dateObj.date = moment(dateObj.date).format('MMMM DD, YYYY');
+    }
+
+    // Display result section
+    $('#resultContainer').removeClass('d-none');
+
+    // Populate names in result section
+    $('#resultFname').text($('#parent1Input').val());
+    $('#resultMname').text($('#parent2Input').val());
+
+    const tableBody = $('#resultTablebody');
+
+    tableBody.empty();
+    if (!datePercentageArray.length) {
+        const row = $('<tr>');
+        const td = $('<td>');
+        td.append($('<em>No data</em>')).attr('colspan', '3').addClass('text-center');
+
+        row.append(td);
+
+        tableBody.append(row);
+        return;
+    }
+
+    for (let data of datePercentageArray) {
+        const row = $('<tr>');
+
+        const td1 = $('<td>');
+        td1.text(data.fatherPercentage + '%');
+
+        const td2 = $('<td>');
+        td2.text(data.motherPercentage + '%');
+
+        const td3 = $('<td>');
+        td3.text(data.date);
+
+        row.append(td1, td2, td3);
+
+        tableBody.append(row);
+    }
+}
+
 
   
  
